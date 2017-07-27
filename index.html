@@ -1,16 +1,72 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.1/pixi.min.js"></script>
-		<script src="src/main.js"></script>
-		<style>
-		body {margin: 0; overflow: hidden;}
-		</style>
+		<meta name="google-signin-scope" content="profile email">
+		<meta name="google-signin-client_id" content="354831220610-qirvi2r1ceb9dbpgi9jh15s926t49rue.apps.googleusercontent.com">
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<link href="style/main.css" rel="stylesheet">
 	</head>
-	<body>
+	<body class="blue-grey lighten-2">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+		<script src="https://apis.google.com/js/platform.js" async defer></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/js/materialize.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.1/pixi.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+		
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+		
+		<script src="src/main.js"></script>
+		<script src="src/auth.js"></script>
+		<script src="src/player.js"></script>
+		<script src="src/mail.js"></script>
+		<script src="src/game.js"></script>
+		<script src="src/map.js"></script>
+		
+		<h2 class="starter" style="text-align: center;">Proelium</h2>
+		<div class="starter" id="loginContainer"><div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div></div>
+		
+		<div class="menu" style="z-index: 100; transform: scale(0); transition: .4s;">
+			<div class="row">
+				<div class="col s6 card full menu-block blue-grey lighten-2">
+					<div class="row">
+						<div class="col s12">
+							<ul class="tabs">
+								<li class="tab col s6"><a href="#profile">Profile</a></li>
+								<li class="tab col s6"><a class="active" href="#news">News</a></li>
+							</ul>
+						</div>
+						<div id="profile" class="col s12"></div>
+						<div id="news" class="col s12"></div>
+					</div>
+				</div>
+				<div class="col s3 card full menu-block blue-grey lighten-4" id="games"></div>
+				<div class="col s3 full">
+					<div class="row half">
+						<div class="col s12 card full menu-block blue-grey lighten-5">
+							<a id="mail-new" class="waves-effect waves-light btn-flat left tooltipped" data-position="bottom" data-delay="50" data-tooltip="You do not have the rank to send mail" style="cursor: not-allowed"><i class="material-icons center">add</i></a>
+							<a id="mail-refresh" class="waves-effect waves-light btn-flat right"><i class="material-icons center">refresh</i></a>
+							<div id="mail-area" style="margin-top: 3em;"></div>
+						</div>
+					</div>
+					<div class="row half">
+						<div class="col s12 card full menu-block green lighten-3">Options</div>
+					</div>
+				</div>
+			</div>
+          
+		</div>
+		
 		<script>
-		var testGame = new Proelium.game("localhost", 1);
-		testGame.start();
+		var socket = io();
+		PIXI.loader.add('logo', '/Logo/Proelium.png').load(function(loader, resources) {
+			requirejs(["biomes/Biome.js"], function (o) {
+				Proelium.biome = o;
+				requirejs(["biomes/index"], function (all) {
+					Proelium.biomes = all;
+				});
+			});
+		});
 		</script>
 	</body>
 </html>

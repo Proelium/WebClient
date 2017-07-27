@@ -1,86 +1,34 @@
 var Proelium = {
-	Hexagon: function (hexagonRadius, hexagonHeight) {
-		var hex = new PIXI.Graphics();
-		hex.beginFill(0xFF0000);
-		
-		hex.drawPolygon([
-			-hexagonRadius, 0,
-			-hexagonRadius/2, hexagonHeight/2,
-			hexagonRadius/2, hexagonHeight/2,
-			hexagonRadius, 0,
-			hexagonRadius/2, -hexagonHeight/2,
-			-hexagonRadius/2, -hexagonHeight/2,
-		]);
-		
-		hex.endFill();
-		return hex;
-	}
+	getUser: function (id) {
+		if (id == -1)
+			return "Proelium";
+		return id;
+	},
+	filter: function (str) {
+		return str;
+	},
+	currentGame: false,
+	hideMenu: function () {
+		$(".menu").css("transform", "scale(0)");
+		$("#profile").html(Proelium.user.view());
+	},
+	showMenu: function () {
+		if (Proelium.currentGame !== false) {
+			Proelium.currentGame.exit();
+			delete Proelium.currentGame;
+			Proelium.currentGame = false;
+		}
+		$(".menu").css("transform", "scale(1)");
+		$("#profile").html(Proelium.user.view());
+	},
+	user: false, //No user until logged in
+	notify: function (msg) {
+		Materialize.toast(msg, 4000);
+	},
+	cache: false
 };
 
-Proelium.game = function (ip, gameId) {
-	this.ip = ip;
-	this.gameId = gameId;
-	this.app = false;
-	this.selected = [];
-};
-
-Proelium.game.prototype.start = function () {
-	//TODO: Add game server connection
-	
-	const app = new PIXI.Application();
-	this.app = app;
-	
-	document.body.appendChild(app.view);
-	
-	var handle = function () {
-		app.view.width = window.innerWidth;
-		app.view.height = window.innerHeight;
-		app.renderer.resize(window.innerWidth, window.innerHeight);
-	};
-	
-	window.onresize = handle;
-	
-	handle();
-	
-	PIXI.loader.add('logo', '/Logo/Proelium Logo.png').load(function(loader, resources) {
-		var map = new PIXI.Container();
-		map.position.x = 200;
-		map.position.y = 200;
-		
-		
-		function hexSelect() {
-			console.log(this.mapData);
-		}
-		
-		function hover() {
-			this.alpha = 0.5;
-		}
-		
-		function hoverLeave() {
-			this.alpha = 1;
-		}
-		
-		app.stage.addChild(map);
-		var onOff = true;
-		for (var i = 0; i < 10; i++) {
-			for (var j = 0; j < 10; j++) {
-				onOff = !onOff;
-				var size = 24;
-				var hex = Proelium.Hexagon(46, 80);
-				var pos = toHexagonPosition({x: i*(72), y: j*(82)}, 46, 80);
-				hex.position.x = pos.x;
-				hex.position.y = pos.y;
-				hex.interactive = true;
-				hex.mouseover = hover;
-				hex.mouseout = hoverLeave;
-				hex.click = hexSelect;
-				hex.mapData = {x: i, y: j};
-				
-				map.addChild(hex);
-			}
-		}
-	});
-};
+global = {Proelium: Proelium};
 
 function toHexagonPosition(p, hexagonRadius, hexagonHeight) {
   var newP = {};
@@ -94,3 +42,8 @@ function toHexagonPosition(p, hexagonRadius, hexagonHeight) {
   
   return newP;
 }
+
+document.onkeyup = function (e) {
+	if (e.keyCode == 27)
+		Proelium.showMenu();
+};
